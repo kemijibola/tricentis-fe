@@ -54,7 +54,7 @@ const Songs: FunctionComponent = () => {
     const debouncedSearchText = useDebounce(searchText, 500);
 
     useEffect(() => {
-        const interval = setInterval(handleElementShift, 2000);
+        const interval = setInterval(handleElementShift, 1000);
         return () => clearInterval(interval);
     }, []);
 
