@@ -48,6 +48,9 @@ const Songs: FunctionComponent = () => {
     const elements = ['A', 'B', 'C', 'D', 'E'];
     const [sortedAlbums, setSortedAlbums] = useState<string[]>([]);
     const [results, setResults] = useState<string[]>(elements);
+    let startIdx = 0; let
+        counter = 0;
+    let clonedElementsAfterShift: string[] = [];
     const onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchText(e.target.value);
     };
@@ -67,11 +70,20 @@ const Songs: FunctionComponent = () => {
     };
 
     const shiftAlbum = () => {
-        const newAlbum = elementsAfterShift;
-        const newArr = sortedAlbums.splice(0, 5 - elementsAfterShift.length);
-        newAlbum.push(...newArr);
-        setResults(results.splice(0, results.length, ...newAlbum));
-        elementsAfterShift.shift();
+        if (counter === 0) {
+            clonedElementsAfterShift = [...elementsAfterShift];
+        }
+        if (clonedElementsAfterShift.length > 0) {
+            const albumToDisplay = [...sortedAlbums].splice(startIdx, 5 - clonedElementsAfterShift.length);
+            const joinedList = [...clonedElementsAfterShift, ...albumToDisplay];
+            clonedElementsAfterShift.shift();
+            setResults(joinedList);
+        } else {
+            startIdx += 1;
+            const anything = [...sortedAlbums].splice(startIdx - 1, 5);
+            setResults(anything);
+        }
+        counter += 1;
     };
 
     const handleElementShift = () => {
@@ -85,10 +97,10 @@ const Songs: FunctionComponent = () => {
             (async () => {
                 try {
                     const { data } = await fetchSongs(debouncedSearchText);
-                    const albumResult: string[] = data?.results.map((result: any) => result.collectionName);
+                    const albumResult: string[] = data?.results?.map((result: any) => result.collectionName);
                     if (albumResult?.length) {
                         albumResult.sort();
-                        setSortedAlbums(sortedAlbums.splice(0, sortedAlbums.length, ...albumResult.splice(0, 5)));
+                        setSortedAlbums(sortedAlbums.splice(0, sortedAlbums.length, ...albumResult));
                     }
                 } catch (e: any) {
                     console.error(`Could not fetch songs - stack: ${(e as Error).stack}`);
