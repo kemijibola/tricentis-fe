@@ -98,7 +98,7 @@ const Songs: FunctionComponent = () => {
     }, [debouncedSearchText]);
 
     const mapList = (element: string, idx: number) => (
-        <Grid key={idx + 1}>
+        <Grid key={idx + 1} data-testid="elements">
             <Grid style={{
                 border: '1px solid black',
                 borderRadius: 5,
